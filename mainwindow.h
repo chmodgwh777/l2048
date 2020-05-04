@@ -1,12 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "block.h"
 #include <QLinkedList>
 #include <QMainWindow>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QParallelAnimationGroup>
 #include <list>
 #include <optional>
+#include "block.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -53,6 +55,8 @@ class MainWindow : public QMainWindow {
 
   const int size;
   Direction dir;
+
+  QMutex _mutex;
 
   // 一维数组
   PBlock_opt *square;

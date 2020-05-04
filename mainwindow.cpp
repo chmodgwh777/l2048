@@ -3,6 +3,7 @@
 #include "ui_mainwindow.h"
 
 #include <QAbstractAnimation>
+#include <QMutexLocker>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
@@ -46,6 +47,8 @@ MainWindow::MainWindow(int size, QWidget *parent)
     }
     remove();
     gen();
+    //    qDebug() << block_list.count();
+    _mutex.unlock();
   });
 }
 
@@ -195,9 +198,11 @@ void MainWindow::play() {
 }
 
 void MainWindow::loop(Direction d) {
-  this->set_dir(d);
-  move();
-  play();
+  if (_mutex.tryLock()) {
+    this->set_dir(d);
+    move();
+    play();
+  }
 }
 
 void MainWindow::set_dir(Direction dir) {
