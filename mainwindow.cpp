@@ -116,7 +116,6 @@ void MainWindow::move() {
     auto &current = (this->*get)(num, i);
 
     if (i > 0) {
-      changed = true;
       // 为动画设置 step;
       (**current)->setStep(i);
 
@@ -136,7 +135,6 @@ void MainWindow::move() {
       auto &previous = (this->*get)(num, previous_postion);
       if ((**current)->getNum() == (**previous)->getNum() && can_merge) {
         // 合并，删除前一个块
-        changed = true;
         remove_list.push_back(*previous);
         previous.reset();
 
@@ -149,7 +147,6 @@ void MainWindow::move() {
         can_merge = false;
       } else {
         // 移动
-        changed = true;
         previous_postion++;
         (**current)->setStep(i - previous_postion);
 
@@ -185,6 +182,9 @@ void MainWindow::play() {
   }
 
   for (auto block : block_list) {
+    if (block->getStep() != 0) {
+      changed = true;
+    }
     block->moveAnimation->setStartValue(block->pos());
     block->moveAnimation->setEndValue(block->pos() +
                                       block->getStep() * (gap + length) * coff);
