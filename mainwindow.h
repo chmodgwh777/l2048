@@ -4,7 +4,6 @@
 #include <QLinkedList>
 #include <QMainWindow>
 #include <QMutex>
-#include <QMutexLocker>
 #include <QParallelAnimationGroup>
 #include <list>
 #include <optional>
@@ -14,7 +13,6 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-enum Direction { Left, Right, Up, Down };
 
 /***
  * MainWindow 将Block的 `构造、销毁与动画' `游戏的逻辑' 分开.
@@ -37,15 +35,11 @@ class MainWindow : public QMainWindow {
   explicit MainWindow(int, QWidget *parent = nullptr);
   ~MainWindow();
 
-  void set_dir(Direction);
-
+ private:
+  enum Direction { Left, Right, Up, Down };
   using PBlock = typename QLinkedList<Block *>::iterator;
   using PBlock_opt = std::optional<PBlock>;
 
- private slots:
-  //  void on_downButton_clicked();
-
- private:
   const int gap = 10;
   const int length = 50;
 
@@ -58,17 +52,18 @@ class MainWindow : public QMainWindow {
 
   QMutex _mutex;
 
-  // 一维数组
+  // square 是一维数组
   PBlock_opt *square;
   QLinkedList<Block *> block_list;
   QLinkedList<Block *> new_list;
   QLinkedList<PBlock> remove_list;
 
   void loop(Direction);
+  void set_dir(Direction);
   void move();
   void display();
   void play();
-  bool gen();
+  void gen();
   void remove();
 
   PBlock_opt &(MainWindow::*get)(int, int);

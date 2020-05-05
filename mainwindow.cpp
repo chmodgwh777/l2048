@@ -3,7 +3,7 @@
 #include "ui_mainwindow.h"
 
 #include <QAbstractAnimation>
-#include <QMutexLocker>
+#include <QMutex>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
@@ -38,16 +38,10 @@ MainWindow::MainWindow(int size, QWidget *parent)
 
   QObject::connect(group, &QParallelAnimationGroup::finished, [&]() {
     for (auto block : block_list) {
-      block->step = 0;
-      if (block->times) {
-        block->num <<= 1;
-        block->times = false;
-        block->setText(QString("%1").arg(block->num));
-      }
+      block->updateState();
     }
     remove();
     gen();
-    //    qDebug() << block_list.count();
     _mutex.unlock();
   });
 }
@@ -73,7 +67,8 @@ void MainWindow::display() {
     deb << "\n";
   }
 }
-bool MainWindow::gen() {
+
+void MainWindow::gen() {
   int r = qrand() % (size * size);
   while (square[r]) {
     r = (r + 1) % (size * size);
@@ -90,9 +85,6 @@ bool MainWindow::gen() {
   (square + row * size)[column] = block_list.begin();
 
   group->addAnimation(p->moveAnimation);
-
-  //  display();
-  return true;
 }
 
 void MainWindow::remove() {
@@ -117,15 +109,9 @@ void MainWindow::move() {
     auto &current = (this->*get)(num, i);
 
     if (i > 0) {
-      // (num, i) 是本列第一个非空格子，将其移动到 (num, 0);
-      // (this->*get)(num, 0) == std::nullopt;
-      assert(!(this->*get)(num, 0));
-
       // 为动画设置 step;
-      (**current)->step = i;
+      (**current)->setStep(i);
 
-      //      (this->*get)(num, 0) = current;
-      //      current.reset();
       std::swap(current, (this->*get)(num, 0));
     }
 
@@ -140,15 +126,14 @@ void MainWindow::move() {
       // (num, i) 有块
       auto &current = (this->*get)(num, i);
       auto &previous = (this->*get)(num, previous_postion);
-      if ((**current)->num == (**previous)->num && can_merge) {
+      if ((**current)->getNum() == (**previous)->getNum() && can_merge) {
         // 合并，删除前一个块
-        (**previous)->disappear = true;
         remove_list.push_back(*previous);
-        previous = {};
+        previous.reset();
 
         // 将 current 移动到 previous_postion，注册移动动画与翻倍动画.
-        (**current)->step = i - previous_postion;
-        (**current)->times = true;
+        (**current)->setStep(i - previous_postion);
+        (**current)->setDouble();
 
         std::swap(current, previous);
 
@@ -156,7 +141,7 @@ void MainWindow::move() {
       } else {
         // 移动
         previous_postion++;
-        (**current)->step = i - previous_postion;
+        (**current)->setStep(i - previous_postion);
 
         std::swap(current, (this->*get)(num, previous_postion));
 
@@ -192,7 +177,7 @@ void MainWindow::play() {
   for (auto block : block_list) {
     block->moveAnimation->setStartValue(block->pos());
     block->moveAnimation->setEndValue(block->pos() +
-                                      block->step * (gap + length) * coff);
+                                      block->getStep() * (gap + length) * coff);
   }
   group->start();
 }
