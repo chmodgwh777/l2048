@@ -41,7 +41,7 @@ class MainWindow : public QMainWindow {
   using PBlock_opt = std::optional<PBlock>;
 
   const int gap = 10;
-  const int length = 50;
+  const int length = 70;
 
   Ui::MainWindow *ui;
 
@@ -51,6 +51,8 @@ class MainWindow : public QMainWindow {
   Direction dir;
 
   QMutex _mutex;
+
+  bool changed = false;
 
   // square 是一维数组
   PBlock_opt *square;

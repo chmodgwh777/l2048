@@ -1,11 +1,12 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include <QLabel>
 #include <QMap>
 #include <QPropertyAnimation>
 #include <QPushButton>
 
-class Block : public QPushButton {
+class Block : public QLabel {
   Q_OBJECT;
 
  public:

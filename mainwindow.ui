@@ -105,6 +105,19 @@
      <string>↓</string>
     </property>
    </widget>
+   <widget class="QWidget" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>330</width>
+      <height>330</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: #BBADA0;</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

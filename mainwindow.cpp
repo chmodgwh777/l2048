@@ -18,6 +18,7 @@ MainWindow::MainWindow(int size, QWidget *parent)
       ui(new Ui::MainWindow),
       group(new QParallelAnimationGroup(this)),
       size(size),
+      changed(false),
       square(new MainWindow::PBlock_opt[size * size]) {
   ui->setupUi(this);
   qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
@@ -41,7 +42,10 @@ MainWindow::MainWindow(int size, QWidget *parent)
       block->updateState();
     }
     remove();
-    gen();
+    if (changed) {
+      gen();
+    }
+    changed = false;
     _mutex.unlock();
   });
 }
@@ -69,6 +73,9 @@ void MainWindow::display() {
 }
 
 void MainWindow::gen() {
+  if (block_list.count() == size * size) {
+    return;
+  }
   int r = qrand() % (size * size);
   while (square[r]) {
     r = (r + 1) % (size * size);
@@ -109,6 +116,7 @@ void MainWindow::move() {
     auto &current = (this->*get)(num, i);
 
     if (i > 0) {
+      changed = true;
       // 为动画设置 step;
       (**current)->setStep(i);
 
@@ -128,6 +136,7 @@ void MainWindow::move() {
       auto &previous = (this->*get)(num, previous_postion);
       if ((**current)->getNum() == (**previous)->getNum() && can_merge) {
         // 合并，删除前一个块
+        changed = true;
         remove_list.push_back(*previous);
         previous.reset();
 
@@ -140,6 +149,7 @@ void MainWindow::move() {
         can_merge = false;
       } else {
         // 移动
+        changed = true;
         previous_postion++;
         (**current)->setStep(i - previous_postion);
 
