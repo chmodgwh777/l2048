@@ -13,6 +13,11 @@
 #include <QDebug>
 #include <QTime>
 
+/***
+ * margin: #BBADA0
+ * bottom: #CDC1B4
+ * */
+
 MainWindow::MainWindow(int size, QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),

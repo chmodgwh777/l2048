@@ -4,34 +4,34 @@
 #include <QPushButton>
 
 QMap<int, QString> Block::getStyle = {
-    {2, QStringLiteral(
-            "color:#776e65;background-color:#eee4da;border-radius:3px")},
-    {4, QStringLiteral(
-            "color:#776e65;background-color:#ede0c8;border-radius:3px")},
-    {8, QStringLiteral(
-            "color:#f9f6f2;background-color:#f2b179;border-radius:3px")},
-    {16, QStringLiteral(
-             "color:#f9f6f2;background-color:#f59563;border-radius:3px")},
-    {32, QStringLiteral(
-             "color:#f9f6f2;background-color:#f67c5f;border-radius:3px")},
-    {64, QStringLiteral(
-             "color:#f9f6f2;background-color:#f65e3b;border-radius:3px")},
-    {128, QStringLiteral(
-              "color:#f9f6f2;background-color:#edcf72;border-radius:3px")},
-    {256, QStringLiteral(
-              "color:#f9f6f2;background-color:#edcc61;border-radius:3px")},
-    {512, QStringLiteral(
-              "color:#f9f6f2;background-color:#edc850;border-radius:3px")},
-    {1024, QStringLiteral(
-               "color:#f9f6f2;background-color:#edc53f;border-radius:3px")},
-    {2048, QStringLiteral(
-               "color:#f9f6f2;background-color:#edc22e;border-radius:3px")},
+    {2, QStringLiteral("color:#776e65;background-color:#eee4da;border-radius:"
+                       "3px;text-align:center;font-size:40px;")},
+    {4, QStringLiteral("color:#776e65;background-color:#ede0c8;border-radius:"
+                       "3px;text-align:center;font-size:40px;")},
+    {8, QStringLiteral("color:#f9f6f2;background-color:#f2b179;border-radius:"
+                       "3px;text-align:center;font-size:40px;")},
+    {16, QStringLiteral("color:#f9f6f2;background-color:#f59563;border-radius:"
+                        "3px;text-align:center;font-size:40px;")},
+    {32, QStringLiteral("color:#f9f6f2;background-color:#f67c5f;border-radius:"
+                        "3px;text-align:center;font-size:40px;")},
+    {64, QStringLiteral("color:#f9f6f2;background-color:#f65e3b;border-radius:"
+                        "3px;text-align:center;font-size:40px;")},
+    {128, QStringLiteral("color:#f9f6f2;background-color:#edcf72;border-radius:"
+                         "3px;text-align:center;font-size:30px;")},
+    {256, QStringLiteral("color:#f9f6f2;background-color:#edcc61;border-radius:"
+                         "3px;text-align:center;font-size:30px;")},
+    {512, QStringLiteral("color:#f9f6f2;background-color:#edc850;border-radius:"
+                         "3px;text-align:center;font-size:30px;")},
+    {1024, QStringLiteral("color:#f9f6f2;background-color:#edc53f;border-"
+                          "radius:3px;text-align:center;font-size:30px;")},
+    {2048, QStringLiteral("color:#f9f6f2;background-color:#edc22e;border-"
+                          "radius:3px;text-align:center;font-size:30px;")},
 };
 
-QFont Block::font(QStringLiteral("Courier New"), 40, QFont::Bold);
+QFont Block::font(QStringLiteral("Courier New"), 30, QFont::Bold);
 
 Block::Block(int num, QRect rect, QWidget *parent)
-    : QLabel(parent),
+    : QPushButton(parent),
       moveAnimation(new QPropertyAnimation(this, "pos")),
       num(num),
       step(0),
@@ -40,10 +40,10 @@ Block::Block(int num, QRect rect, QWidget *parent)
   moveAnimation->setDuration(100);
   moveAnimation->setEasingCurve(QEasingCurve::InOutQuad);
 
-  this->setAlignment(Qt::AlignCenter);
+  //  this->setAlignment(Qt::AlignCenter);
   this->setFont(font);
-  reDraw();
   this->show();
+  reDraw();
 }
 
 Block::~Block() {}
