@@ -3,6 +3,7 @@
 #include "ui_mainwindow.h"
 
 #include <QAbstractAnimation>
+#include <QGridLayout>
 #include <QMutex>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
@@ -26,6 +27,26 @@ MainWindow::MainWindow(int size, QWidget *parent)
       changed(false),
       square(new MainWindow::PBlock_opt[size * size]) {
   ui->setupUi(this);
+
+  auto m_field = new QWidget(this);
+  auto width = size * (length + gap) + gap;
+  m_field->setGeometry(0, 0, width, width);
+  m_field->setStyleSheet(QStringLiteral("background-color:#BBADA0;"));
+
+  auto grid = new QGridLayout(m_field);
+  grid->setSpacing(gap);
+  grid->setContentsMargins(gap, gap, gap, gap);
+
+  for (auto i = 0; i < size; i++) {
+    for (auto j = 0; j < size; j++) {
+      auto w = new QWidget();
+      w->setStyleSheet(
+          QStringLiteral("background-color:#CDC1B4;border-radius:3px;"));
+      w->resize(length, length);
+      grid->addWidget(w, i, j);
+    }
+  }
+
   qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
 
   QObject::connect(ui->upBotton, &QPushButton::clicked, [=]() { loop(Up); });
@@ -146,6 +167,8 @@ void MainWindow::move() {
         // 将 current 移动到 previous_postion，注册移动动画与翻倍动画.
         (**current)->setStep(i - previous_postion);
         (**current)->setDouble();
+
+        (**current)->stackUnder(**previous);
 
         std::swap(current, previous);
 
