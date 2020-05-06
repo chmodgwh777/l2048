@@ -23,9 +23,9 @@ QMap<int, QString> Block::getStyle = {
     {512, QStringLiteral("color:#f9f6f2;background-color:#edc850;border-radius:"
                          "3px;text-align:center;font-size:30px;")},
     {1024, QStringLiteral("color:#f9f6f2;background-color:#edc53f;border-"
-                          "radius:3px;text-align:center;font-size:30px;")},
+                          "radius:3px;text-align:center;font-size:25px;")},
     {2048, QStringLiteral("color:#f9f6f2;background-color:#edc22e;border-"
-                          "radius:3px;text-align:center;font-size:30px;")},
+                          "radius:3px;text-align:center;font-size:25px;")},
 };
 
 QFont Block::font(QStringLiteral("Courier New"), 30, QFont::Bold);

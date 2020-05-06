@@ -4,6 +4,7 @@
 
 #include <QAbstractAnimation>
 #include <QGridLayout>
+#include <QKeyEvent>
 #include <QMutex>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
@@ -19,6 +20,36 @@
  * bottom: #CDC1B4
  * */
 
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+  switch (event->key()) {
+    case Qt::Key_W:
+      loop(Up);
+      break;
+    case Qt::Key_A:
+      loop(Left);
+      break;
+    case Qt::Key_S:
+      loop(Down);
+      break;
+    case Qt::Key_D:
+      loop(Right);
+      break;
+    case Qt::Key_Up:
+      loop(Up);
+      break;
+    case Qt::Key_Left:
+      loop(Left);
+      break;
+    case Qt::Key_Down:
+      loop(Down);
+      break;
+    case Qt::Key_Right:
+      loop(Right);
+      break;
+    default:;
+  }
+}
+
 MainWindow::MainWindow(int size, QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
@@ -32,6 +63,8 @@ MainWindow::MainWindow(int size, QWidget *parent)
   auto width = size * (length + gap) + gap;
   m_field->setGeometry(0, 0, width, width);
   m_field->setStyleSheet(QStringLiteral("background-color:#BBADA0;"));
+
+  this->resize(width, width);
 
   auto grid = new QGridLayout(m_field);
   grid->setSpacing(gap);
@@ -49,13 +82,13 @@ MainWindow::MainWindow(int size, QWidget *parent)
 
   qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
 
-  QObject::connect(ui->upBotton, &QPushButton::clicked, [=]() { loop(Up); });
-  QObject::connect(ui->downButton, &QPushButton::clicked,
-                   [=]() { loop(Down); });
-  QObject::connect(ui->leftButton, &QPushButton::clicked,
-                   [=]() { loop(Left); });
-  QObject::connect(ui->rightButton, &QPushButton::clicked,
-                   [=]() { loop(Right); });
+  //  QObject::connect(ui->upBotton, &QPushButton::clicked, [=]() { loop(Up);
+  //  }); QObject::connect(ui->downButton, &QPushButton::clicked,
+  //                   [=]() { loop(Down); });
+  //  QObject::connect(ui->leftButton, &QPushButton::clicked,
+  //                   [=]() { loop(Left); });
+  //  QObject::connect(ui->rightButton, &QPushButton::clicked,
+  //                   [=]() { loop(Right); });
 
   group->setDirection(QAbstractAnimation::Forward);
   group->setLoopCount(1);

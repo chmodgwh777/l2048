@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QKeyEvent>
 #include <QLinkedList>
 #include <QMainWindow>
 #include <QMutex>
@@ -34,6 +35,7 @@ class MainWindow : public QMainWindow {
  public:
   explicit MainWindow(int, QWidget *parent = nullptr);
   ~MainWindow();
+  void keyPressEvent(QKeyEvent *) override;
 
  private:
   enum Direction { Left, Right, Up, Down };
@@ -59,6 +61,8 @@ class MainWindow : public QMainWindow {
   QLinkedList<Block *> block_list;
   QLinkedList<Block *> new_list;
   QLinkedList<PBlock> remove_list;
+
+  //  QKeyEvent event;
 
   void loop(Direction);
   void set_dir(Direction);
