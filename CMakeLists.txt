@@ -20,13 +20,13 @@ add_executable(learn
     main.cpp
     mainwindow.h
     mainwindow.cpp
-    mainwindow.ui
+#    mainwindow.ui
     block.cpp
     block.h
 )
 
-target_link_libraries(learn 
-    PRIVATE 
+target_link_libraries(learn
+    PRIVATE
     Qt5::Widgets
 )
 

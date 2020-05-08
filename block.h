@@ -6,7 +6,7 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 
-class Block : public QPushButton {
+class Block : public QLabel {
   Q_OBJECT;
 
  public:

@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "block.h"
-#include "ui_mainwindow.h"
+//#include "ui_mainwindow.h"
 
 #include <QAbstractAnimation>
 #include <QGridLayout>
@@ -51,13 +51,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 }
 
 MainWindow::MainWindow(int size, QWidget *parent)
-    : QMainWindow(parent),
-      ui(new Ui::MainWindow),
+    : QWidget(parent),
+      //      ui(new Ui::MainWindow),
       group(new QParallelAnimationGroup(this)),
       size(size),
       changed(false),
       square(new MainWindow::PBlock_opt[size * size]) {
-  ui->setupUi(this);
+  //  ui->setupUi(this);
 
   auto m_field = new QWidget(this);
   auto width = size * (length + gap) + gap;
@@ -82,14 +82,6 @@ MainWindow::MainWindow(int size, QWidget *parent)
 
   qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
 
-  //  QObject::connect(ui->upBotton, &QPushButton::clicked, [=]() { loop(Up);
-  //  }); QObject::connect(ui->downButton, &QPushButton::clicked,
-  //                   [=]() { loop(Down); });
-  //  QObject::connect(ui->leftButton, &QPushButton::clicked,
-  //                   [=]() { loop(Left); });
-  //  QObject::connect(ui->rightButton, &QPushButton::clicked,
-  //                   [=]() { loop(Right); });
-
   group->setDirection(QAbstractAnimation::Forward);
   group->setLoopCount(1);
 
@@ -110,7 +102,7 @@ MainWindow::MainWindow(int size, QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
-  delete ui;
+  //  delete ui;
   delete[] square;
 }
 
@@ -136,6 +128,7 @@ void MainWindow::gen() {
     return;
   }
   int r = qrand() % (size * size);
+  auto init = r % 2 == 0 ? 2 : 4;
   while (square[r]) {
     r = (r + 1) % (size * size);
   }
@@ -144,7 +137,7 @@ void MainWindow::gen() {
   int x = gap + column * (gap + length);
   int y = gap + row * (gap + length);
 
-  auto p = new Block(2, QRect(x, y, length, length), this);
+  auto p = new Block(init, QRect(x, y, length, length), this);
 
   block_list.push_front(p);
 

@@ -6,7 +6,8 @@
 #include <QMainWindow>
 #include <QMutex>
 #include <QParallelAnimationGroup>
-#include <list>
+#include <QQueue>
+//#include <list>
 #include <optional>
 #include "block.h"
 
@@ -29,7 +30,7 @@ QT_END_NAMESPACE
  *  6. 销毁必要的块并从 block_list 中 erase 掉.
  **/
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QWidget {
   Q_OBJECT
 
  public:
@@ -45,7 +46,7 @@ class MainWindow : public QMainWindow {
   const int gap = 10;
   const int length = 70;
 
-  Ui::MainWindow *ui;
+  //  Ui::MainWindow *ui;
 
   QParallelAnimationGroup *group;
 

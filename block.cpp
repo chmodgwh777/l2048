@@ -28,19 +28,19 @@ QMap<int, QString> Block::getStyle = {
                           "radius:3px;text-align:center;font-size:25px;")},
 };
 
-QFont Block::font(QStringLiteral("Courier New"), 30, QFont::Bold);
+QFont Block::font(QStringLiteral("Courier New"), -1, QFont::Bold);
 
 Block::Block(int num, QRect rect, QWidget *parent)
-    : QPushButton(parent),
+    : QLabel(parent),
       moveAnimation(new QPropertyAnimation(this, "pos")),
       num(num),
       step(0),
       doDouble(false) {
   this->setGeometry(rect);
   moveAnimation->setDuration(100);
-  moveAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+  moveAnimation->setEasingCurve(QEasingCurve::Linear);
 
-  //  this->setAlignment(Qt::AlignCenter);
+  this->setAlignment(Qt::AlignCenter);
   this->setFont(font);
   this->show();
   reDraw();
