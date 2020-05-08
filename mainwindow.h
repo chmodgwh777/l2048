@@ -57,6 +57,9 @@ class MainWindow : public QWidget {
 
   bool changed = false;
 
+  int score = 0;
+  QLabel *m_score = nullptr;
+
   // square 是一维数组
   PBlock_opt *square;
   QLinkedList<Block *> block_list;

@@ -3,8 +3,9 @@
 //#include "ui_mainwindow.h"
 
 #include <QAbstractAnimation>
-#include <QGridLayout>
+//#include <QGridLayout>
 #include <QKeyEvent>
+#include <QLayout>
 #include <QMutex>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
@@ -52,21 +53,21 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 
 MainWindow::MainWindow(int size, QWidget *parent)
     : QWidget(parent),
-      //      ui(new Ui::MainWindow),
       group(new QParallelAnimationGroup(this)),
       size(size),
       changed(false),
+      //      m_field(this),
       square(new MainWindow::PBlock_opt[size * size]) {
-  //  ui->setupUi(this);
+  auto main_layout = new QVBoxLayout;
 
-  auto m_field = new QWidget(this);
+  /*********
+   * field *
+   *********/
   auto width = size * (length + gap) + gap;
-  m_field->setGeometry(0, 0, width, width);
-  m_field->setStyleSheet(QStringLiteral("background-color:#BBADA0;"));
+  //  m_field->resize(width, width);
+  this->setStyleSheet(QStringLiteral("background-color:#BBADA0;"));
 
-  this->resize(width, width);
-
-  auto grid = new QGridLayout(m_field);
+  auto grid = new QGridLayout;
   grid->setSpacing(gap);
   grid->setContentsMargins(gap, gap, gap, gap);
 
@@ -79,6 +80,27 @@ MainWindow::MainWindow(int size, QWidget *parent)
       grid->addWidget(w, i, j);
     }
   }
+
+  /*********
+   * score *
+   *********/
+  this->m_score = new QLabel(this);
+  m_score->setText(QString("Score:%1").arg(this->score, 6));
+  auto font = QFont(QStringLiteral("Courier New"), 40, QFont::Bold);
+  m_score->setFont(font);
+  m_score->setAlignment(Qt::AlignCenter);
+  m_score->resize(width, length);
+
+  main_layout->setSpacing(0);
+  main_layout->setMargin(0);
+  main_layout->addWidget(m_score);
+  main_layout->addLayout(grid);
+
+  main_layout->setStretch(0, length);
+  main_layout->setStretch(1, width);
+
+  this->resize(width, length + width);
+  this->setLayout(main_layout);
 
   qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
 
@@ -97,12 +119,14 @@ MainWindow::MainWindow(int size, QWidget *parent)
       gen();
     }
     changed = false;
+    m_score->setText(QString("Score:%1").arg(this->score, 6));
     _mutex.unlock();
   });
 }
 
 MainWindow::~MainWindow() {
   //  delete ui;
+  //  delete m_field;
   delete[] square;
 }
 
@@ -137,7 +161,7 @@ void MainWindow::gen() {
   int x = gap + column * (gap + length);
   int y = gap + row * (gap + length);
 
-  auto p = new Block(init, QRect(x, y, length, length), this);
+  auto p = new Block(init, QRect(x, y + length, length, length), this);
 
   block_list.push_front(p);
 
@@ -187,6 +211,7 @@ void MainWindow::move() {
       auto &previous = (this->*get)(num, previous_postion);
       if ((**current)->getNum() == (**previous)->getNum() && can_merge) {
         // 合并，删除前一个块
+        this->score += (**current)->getNum() * 2;
         remove_list.push_back(*previous);
         previous.reset();
 

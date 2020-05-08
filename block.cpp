@@ -37,7 +37,7 @@ Block::Block(int num, QRect rect, QWidget *parent)
       step(0),
       doDouble(false) {
   this->setGeometry(rect);
-  moveAnimation->setDuration(100);
+  moveAnimation->setDuration(70);
   moveAnimation->setEasingCurve(QEasingCurve::Linear);
 
   this->setAlignment(Qt::AlignCenter);
