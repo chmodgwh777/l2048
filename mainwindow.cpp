@@ -99,7 +99,7 @@ MainWindow::MainWindow(int size, QWidget *parent)
   main_layout->setStretch(0, length);
   main_layout->setStretch(1, width);
 
-  this->resize(width, length + width);
+  this->setFixedSize(width, length + width);
   this->setLayout(main_layout);
 
   qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
