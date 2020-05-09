@@ -21,6 +21,9 @@ add_executable(learn
     mainwindow.h
     mainwindow.cpp
 #    mainwindow.ui
+    maininterface.cpp
+    maininterface.h
+    maininterface.ui
     block.cpp
     block.h
 )
