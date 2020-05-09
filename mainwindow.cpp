@@ -156,17 +156,26 @@ void MainWindow::gen() {
     return;
   }
   int r = qrand() % (size * size);
-  auto init = r % 2 == 0 ? 2 : 4;
-  while (square[r]) {
-    r = (r + 1) % (size * size);
+  int init;
+  if (r % 2 == 0) {
+    init = 2;
+    while (square[r]) {
+      r = (r + 1) % (size * size);
+    }
+  } else {
+    init = 4;
+    while (square[r]) {
+      r = r == 0 ? size * size : r - 1;
+    }
   }
-  int column = r % size;
-  int row = r / size;
+  //  int column = r % size;
+  //  int row = r / size;
   auto p = new Block(init, bottom[r]->geometry(), m_field);
 
   block_list.push_front(p);
 
-  (square + row * size)[column] = block_list.begin();
+  //  (square + row * size)[column] = block_list.begin();
+  square[r] = block_list.begin();
 
   group->addAnimation(p->moveAnimation);
 }
