@@ -7,7 +7,7 @@
 #include <QMutex>
 #include <QParallelAnimationGroup>
 #include <QQueue>
-//#include <list>
+#include <QVector>
 #include <optional>
 #include "block.h"
 
@@ -61,6 +61,8 @@ class MainWindow : public QWidget {
   QLabel *m_score = nullptr;
 
   // square 是一维数组
+  QWidget *m_field;
+  QVector<QWidget *> bottom;
   PBlock_opt *square;
   QLinkedList<Block *> block_list;
   QLinkedList<Block *> new_list;

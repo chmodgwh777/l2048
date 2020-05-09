@@ -56,7 +56,8 @@ MainWindow::MainWindow(int size, QWidget *parent)
       group(new QParallelAnimationGroup(this)),
       size(size),
       changed(false),
-      //      m_field(this),
+      m_field(new QWidget),
+      bottom(size * size),
       square(new MainWindow::PBlock_opt[size * size]) {
   auto main_layout = new QVBoxLayout;
 
@@ -64,19 +65,20 @@ MainWindow::MainWindow(int size, QWidget *parent)
    * field *
    *********/
   auto width = size * (length + gap) + gap;
-  //  m_field->resize(width, width);
   this->setStyleSheet(QStringLiteral("background-color:#BBADA0;"));
 
-  auto grid = new QGridLayout;
+  auto grid = new QGridLayout(m_field);
   grid->setSpacing(gap);
-  grid->setContentsMargins(gap, gap, gap, gap);
+  grid->setMargin(gap);
 
+  auto k = 0;
   for (auto i = 0; i < size; i++) {
     for (auto j = 0; j < size; j++) {
       auto w = new QWidget();
+      bottom[k++] = w;
       w->setStyleSheet(
           QStringLiteral("background-color:#CDC1B4;border-radius:3px;"));
-      w->resize(length, length);
+      //      w->resize(length, length);
       grid->addWidget(w, i, j);
     }
   }
@@ -85,16 +87,16 @@ MainWindow::MainWindow(int size, QWidget *parent)
    * score *
    *********/
   this->m_score = new QLabel(this);
-  m_score->setText(QString("Score:%1").arg(this->score, 6));
-  auto font = QFont(QStringLiteral("Courier New"), 40, QFont::Bold);
+  m_score->setText(QString("Score:%1").arg(this->score, 8));
+  auto font = QFont(QStringLiteral("Courier New"), 30, QFont::Bold);
+  font.setPixelSize(30);
   m_score->setFont(font);
   m_score->setAlignment(Qt::AlignCenter);
-  m_score->resize(width, length);
 
   main_layout->setSpacing(0);
   main_layout->setMargin(0);
   main_layout->addWidget(m_score);
-  main_layout->addLayout(grid);
+  main_layout->addWidget(m_field);
 
   main_layout->setStretch(0, length);
   main_layout->setStretch(1, width);
@@ -106,6 +108,8 @@ MainWindow::MainWindow(int size, QWidget *parent)
 
   group->setDirection(QAbstractAnimation::Forward);
   group->setLoopCount(1);
+
+  this->show();
 
   gen();
   gen();
@@ -119,7 +123,7 @@ MainWindow::MainWindow(int size, QWidget *parent)
       gen();
     }
     changed = false;
-    m_score->setText(QString("Score:%1").arg(this->score, 6));
+    m_score->setText(QString("Score:%1").arg(this->score, 8));
     _mutex.unlock();
   });
 }
@@ -158,10 +162,7 @@ void MainWindow::gen() {
   }
   int column = r % size;
   int row = r / size;
-  int x = gap + column * (gap + length);
-  int y = gap + row * (gap + length);
-
-  auto p = new Block(init, QRect(x, y + length, length, length), this);
+  auto p = new Block(init, bottom[r]->geometry(), m_field);
 
   block_list.push_front(p);
 
