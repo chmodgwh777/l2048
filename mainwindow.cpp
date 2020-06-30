@@ -16,6 +16,8 @@
 #include <QDebug>
 #include <QTime>
 
+#include <QMessageBox>
+
 /***
  * margin: #BBADA0
  * bottom: #CDC1B4
@@ -114,7 +116,10 @@ MainWindow::MainWindow(int size, QWidget *parent)
   gen();
   gen();
 
-  QObject::connect(group, &QParallelAnimationGroup::finished, [&]() {
+  // Unlock the mutex when finish the animation.
+  QObject::connect(group, &QParallelAnimationGroup::finished, [&, size]() {
+          // Notice that size is a constant varible, so we have to pass the value of size instead of passing reference
+
     for (auto block : block_list) {
       block->updateState();
     }
@@ -124,6 +129,76 @@ MainWindow::MainWindow(int size, QWidget *parent)
     }
     changed = false;
     m_score->setText(QString("Score:%1").arg(this->score, 8));
+
+    // check if lose
+    if (block_list.count() == size*size) {
+
+        auto userdir = dir;
+
+        set_dir(Up);
+        auto flag = true;
+        for (auto num = 0; num < size; num++) {
+            if (!flag) {
+                break;
+            }
+            auto previous = (**(this->*get)(num, 0))->getNum();
+            for (auto i = 1; i < size; i++) {
+                auto current = (**(this->*get)(num, i))->getNum();
+                if (previous == current) {
+                    flag = false;
+                    break;
+                }
+                previous = current;
+            }
+        }
+
+        if (!flag) {
+            set_dir(userdir);
+            goto out_check_lose;
+        }
+
+        set_dir(Left);
+        for (auto num = 0; num < size; num++) {
+            if (!flag) {
+                break;
+            }
+            auto previous = (**(this->*get)(num, 0))->getNum();
+            for (auto i = 1; i < size; i++) {
+                auto current = (**(this->*get)(num, i))->getNum();
+                if (previous == current) {
+                    flag = false;
+                    break;
+                }
+                previous = current;
+            }
+        }
+
+        set_dir(userdir);
+
+        if (flag) {
+            // lose
+            QMessageBox msgBox;
+            msgBox.setText("You lose!");
+            msgBox.exec();
+            this->close();
+        }
+
+    }
+    out_check_lose:
+
+
+    // check if win
+    auto max = 0;
+    for (auto &b: block_list) {
+        max = std::max(b->getNum(), max);
+    }
+    if (max == 2048) {
+        QMessageBox msgBox;
+        msgBox.setText("You are win!");
+        msgBox.exec();
+        this->close();
+    }
+
     _mutex.unlock();
   });
 }
@@ -134,6 +209,7 @@ MainWindow::~MainWindow() {
   delete[] square;
 }
 
+// Only for Debug
 void MainWindow::display() {
   QDebug deb = qDebug();
   deb << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
@@ -152,9 +228,9 @@ void MainWindow::display() {
 }
 
 void MainWindow::gen() {
-  if (block_list.count() == size * size) {
-    return;
-  }
+//  if (block_list.count() == size * size) {
+//      return;
+//  }
   int r = qrand() % (size * size);
   int init;
   if (r % 2 == 0) {
@@ -178,6 +254,7 @@ void MainWindow::gen() {
   square[r] = block_list.begin();
 
   group->addAnimation(p->moveAnimation);
+
 }
 
 void MainWindow::remove() {
@@ -195,14 +272,14 @@ void MainWindow::move() {
     int i = 0;
     while (!(this->*get)(num, i) && i < size)
       i++;
-    if (i == size) // 这列全是0
+    if (i == size) // all of this column is 0
       continue;
 
     //    auto &previous = (this->*get)(num, i);
     auto &current = (this->*get)(num, i);
 
     if (i > 0) {
-      // 为动画设置 step;
+      // Set step for animation.
       (**current)->setStep(i);
 
       std::swap(current, (this->*get)(num, 0));
@@ -210,22 +287,23 @@ void MainWindow::move() {
 
     bool can_merge = true;
 
-    int previous_postion = 0;  //前一个块移动后的位置.
+    int previous_postion = 0;  // The position which previous block move to.
 
     while (++i < size) {
-      // (num, i) 没有块
+      // There is no block at (num, i)
       if (!(this->*get)(num, i)) continue;
 
-      // (num, i) 有块
+      // There is block at (num, i)
       auto &current = (this->*get)(num, i);
       auto &previous = (this->*get)(num, previous_postion);
       if ((**current)->getNum() == (**previous)->getNum() && can_merge) {
-        // 合并，删除前一个块
+
+        // Merge and remove the previous block
         this->score += (**current)->getNum() * 2;
         remove_list.push_back(*previous);
         previous.reset();
 
-        // 将 current 移动到 previous_postion，注册移动动画与翻倍动画.
+        // Move current block to previous_postion and register the animation.
         (**current)->setStep(i - previous_postion);
         (**current)->setDouble();
 
@@ -235,7 +313,7 @@ void MainWindow::move() {
 
         can_merge = false;
       } else {
-        // 移动
+        // Move
         previous_postion++;
         (**current)->setStep(i - previous_postion);
 
@@ -282,6 +360,7 @@ void MainWindow::play() {
 }
 
 void MainWindow::loop(Direction d) {
+  // Lock the mutex when get uers' keyboard input.
   if (_mutex.tryLock()) {
     this->set_dir(d);
     move();
