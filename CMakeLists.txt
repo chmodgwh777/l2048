@@ -12,7 +12,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-
 add_executable(Game2048
     main.cpp
     mainwindow.h
@@ -20,6 +19,7 @@ add_executable(Game2048
     block.cpp
     block.h
 )
+
 
 target_link_libraries(Game2048
     PRIVATE
